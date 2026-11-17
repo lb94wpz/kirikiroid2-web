@@ -286,8 +286,33 @@ TVPCustomPreferenceForm *TVPCustomPreferenceForm::create(
     TVPCustomPreferenceForm *ret = new TVPCustomPreferenceForm;
     ret->initFromFile(Csd::createNaviBar(), Csd::createListView(), nullptr);
     ret->initFromInfo(tid_title, count, getter, setter);
+    ret->rearrangeLayout();
     ret->autorelease();
     return ret;
+}
+
+// 同 InGameMenuForm：按 720x1080 自然尺寸设计，宽高约束取小、
+// 宽屏时收缩为居中面板；窗口尺寸变化时由 onFrameSizeChanged 再次调用
+void TVPCustomPreferenceForm::rearrangeLayout() {
+    cocos2d::Size sceneSize = TVPMainScene::GetInstance()->getGameNodeSize();
+    setContentSize(sceneSize);
+
+    const float scale = std::min(sceneSize.width / 720.0f,
+                                 sceneSize.height / 1080.0f);
+    const float formW = 720.0f * scale;
+    const float originX = (sceneSize.width - formW) / 2.0f;
+    const float originY = sceneSize.height - 1080.0f * scale;
+
+    if(NaviBar.Root) {
+        NaviBar.Root->setAnchorPoint(cocos2d::Vec2::ZERO);
+        NaviBar.Root->setScale(scale);
+        NaviBar.Root->setPosition(originX, originY + 960.0f * scale);
+    }
+    if(RootNode) {
+        RootNode->setAnchorPoint(cocos2d::Vec2::ZERO);
+        RootNode->setScale(scale);
+        RootNode->setPosition(cocos2d::Vec2(originX, originY));
+    }
 }
 
 void TVPCustomPreferenceForm::bindBodyController(const NodeMap &allNodes) {

@@ -235,6 +235,9 @@ protected:
     void bindBodyController(const NodeMap &allNodes) override;
     void bindFooterController(const NodeMap &allNodes) override {}
 
+    // 同 InGameMenuForm：代码生成 UI 需按场景尺寸适配
+    void rearrangeLayout() override;
+
     std::function<std::pair<std::string, std::string>(int)> _getter;
     std::function<void(int, const std::pair<std::string, std::string> &)>
         _setter;

@@ -279,8 +279,9 @@ namespace Csd {
         root->setContentSize(cocos2d::Size(720, 120));
 
         // Panel_1 背景面板（含渐变色）
+        // 命名为 "background"：iTVPBaseForm 的 NaviBar.Root 依赖该名字查找
         const auto panel1 = Layout::create();
-        panel1->setName("Panel_1");
+        panel1->setName("background");
         panel1->setContentSize(cocos2d::Size(720, 120));
         panel1->setAnchorPoint(cocos2d::Vec2::ZERO);
         panel1->setPosition(cocos2d::Vec2::ZERO);
@@ -330,6 +331,10 @@ namespace Csd {
             Button::create("img/empty.png", "img/gray.png", "img/empty.png");
         title->setName("title");
         title->setTouchEnabled(true);
+        // Widget::init 默认 _ignoreSize=true，setContentSize 会被 empty.png
+        // (1x1) 的纹理尺寸覆盖，setTitleText 后按钮缩成 1x1，标题以 Panel_2
+        // 左缘为中心被裁掉左半。关掉自适应保住 500x120，标题才能居中显示
+        title->ignoreContentAdaptWithSize(false);
         title->setContentSize(cocos2d::Size(500, 120));
         title->setAnchorPoint(cocos2d::Vec2(0, 0.5f));
         title->setPosition(cocos2d::Vec2(0, 60));
@@ -631,6 +636,9 @@ namespace Csd {
         listView->setAnchorPoint(cocos2d::Vec2::ZERO);
         listView->setPosition(cocos2d::Vec2::ZERO);
         listView->setItemsMargin(11);
+        // InGameMenuForm::bindBodyController 按名字 "list" 查找该控件，
+        // 缺少命名会导致 "not exist in code-generated body" 报错并空指针崩溃
+        listView->setName("list");
 
         // 可选：设置背景颜色或图片
         // listView->setBackGroundColorType(Layout::BackGroundColorType::GRADIENT);
